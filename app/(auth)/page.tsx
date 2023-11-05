@@ -1,9 +1,8 @@
-import { ModeToggle } from '@/components/mode-toggle';
-
+import AuthModal from './components/AuthModal';
 export default function Home() {
   return (
-    <div>
-      <ModeToggle />
+    <div className="flex-center min-h-screen flex-col bg-[url('/images/auth-background.png')]">
+      <AuthModal />
     </div>
   );
 }
