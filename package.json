@@ -1,5 +1,5 @@
 {
-  "name": "spotify-clone",
+  "name": "next-template",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -44,6 +44,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
+    "framer-motion": "^10.16.4",
     "lucide-react": "^0.292.0",
     "next": "14.0.1",
     "next-auth": "^4.24.4",

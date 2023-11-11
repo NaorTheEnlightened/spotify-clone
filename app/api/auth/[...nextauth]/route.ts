@@ -5,7 +5,6 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import bcrypt from 'bcrypt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
 import { db } from '@/lib/db';
 
 export const authOptions: NextAuthOptions = {
@@ -20,17 +19,11 @@ export const authOptions: NextAuthOptions = {
     newUser: '/register',
   },
   providers: [
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID as string,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     CredentialsProvider({
-      id: 'credentials',
-      name: 'credentials',
       type: 'credentials',
       credentials: {
         email: {
@@ -38,7 +31,11 @@ export const authOptions: NextAuthOptions = {
           type: 'text',
           placeholder: 'youremail@domain.com',
         },
-        password: { label: 'Password', type: 'password' },
+        password: {
+          label: 'Password',
+          type: 'password',
+          placeholder: '•••••••••',
+        },
       },
       async authorize(credentials) {
         // check to see if email and password exist
@@ -69,33 +66,17 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async session({ token, session }: { token: any; session: any }) {
-      const user = session.user;
-
-      if (token && user) {
-        user.id = token.id;
-        user.name = token.name;
-        user.email = token.email;
-        user.image = token.picture;
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
+        session.user.image = token.picture;
       }
-
       return session;
     },
-    async jwt({ token, user }: { token: any; user: any }) {
-      const dbUser = await db.user.findFirst({
-        where: {
-          email: token?.email,
-        },
-      });
-
-      if (!dbUser) {
-        token.id = user.id;
-        return token;
-      }
-
-      return {
-        id: dbUser.id,
-        email: dbUser.email,
-      };
+    async jwt({ token, user }) {
+      user && (token.id = user.id);
+      return token;
     },
   },
 };
